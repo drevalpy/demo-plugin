@@ -627,7 +627,7 @@ wheels = [
 [[package]]
 name = "drevalpy"
 version = "2.0.0"
-source = { git = "https://github.com/daisybio/drevalpy?rev=v2-13-docs-reference#81437c08be220eb7d1d5282d46be1a07652a3ac9" }
+source = { git = "https://github.com/daisybio/drevalpy?rev=v2-13-docs-reference#a8b969af2ee1de06c08cd85e460e9bcf53c08a74" }
 dependencies = [
     { name = "anndata", version = "0.12.19", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
     { name = "anndata", version = "0.13.4", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },

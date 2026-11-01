@@ -2,5 +2,5 @@
 # selects models by preset name, e.g. `drevalpy run DemoModel ...`.
 DemoModel:
   sample_featurizer: demoTopGenes
-  drug_featurizer: identity # built in: one-hot drug identity
+  drug_featurizer: demoAtomCounts
   predictor: demoRidge

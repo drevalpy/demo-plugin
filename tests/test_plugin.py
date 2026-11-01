@@ -11,7 +11,7 @@ from drevalpy.registry import splitter
 from drevalpy.testing import FEATURIZER_CHECKS, PREDICTOR_CHECKS, build_synthetic_batch, check_plugin
 from drevalpy.types.results import RunResult
 
-from drevalpy_demo_plugin.featurizers import TopVarianceGenes
+from drevalpy_demo_plugin.featurizers import AtomCounts, TopVarianceGenes, count_atoms
 from drevalpy_demo_plugin.plots import PredictionScatter
 from drevalpy_demo_plugin.predictors import Ridge
 
@@ -19,7 +19,8 @@ from drevalpy_demo_plugin.predictors import Ridge
 def test_plugin_registers_every_component():
     report = check_plugin("demo")
     assert report.components == {
-        "featurizer": ("demoTopGenes",),
+        "sample_featurizer": ("demoTopGenes",),
+        "drug_featurizer": ("demoAtomCounts",),
         "predictor": ("demoRidge",),
         "splitter": ("DEMO_LSO",),
         "visualization": ("demoScatter",),
@@ -30,9 +31,15 @@ def test_plugin_registers_the_preset():
     assert ModelSpec.from_name("DemoModel").config.predictor.name == "demoRidge"
 
 
+@pytest.mark.parametrize("featurizer", [TopVarianceGenes, AtomCounts])
 @pytest.mark.parametrize("check", FEATURIZER_CHECKS)
-def test_featurizer_conforms(check, dataset):
-    check(TopVarianceGenes, dataset)
+def test_featurizers_conform(check, featurizer, dataset):
+    check(featurizer, dataset)
+
+
+def test_atom_counts_read_aromatic_and_bracket_atoms():
+    assert count_atoms("c1ccncc1Cl") == {"C": 5, "N": 1, "Cl": 1}
+    assert count_atoms("[Na+].[O-]C(=O)C") == {"Na": 1, "O": 2, "C": 2}
 
 
 @pytest.mark.parametrize("check", PREDICTOR_CHECKS)

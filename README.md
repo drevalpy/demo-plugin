@@ -4,15 +4,20 @@ A minimal [DrEvalPy](https://github.com/daisybio/drevalpy) plugin. It contains o
 working example of each thing a plugin can add to DrEvalPy, so you can copy it as a starting
 point for your own.
 
-| What              | Name           | File                                                        | What it does                                                      |
-| ----------------- | -------------- | ----------------------------------------------------------- | ----------------------------------------------------------------- |
-| Sample featurizer | `demoTopGenes` | [`featurizers.py`](src/drevalpy_demo_plugin/featurizers.py) | Keeps the `n_genes` most variable genes of the training samples   |
-| Predictor         | `demoRidge`    | [`predictors.py`](src/drevalpy_demo_plugin/predictors.py)   | Ridge regression, with a tunable `penalty`                        |
-| Split mode        | `DEMO_LSO`     | [`splitters.py`](src/drevalpy_demo_plugin/splitters.py)     | Leave-sample-out; sample _i_ is tested in fold _i_ mod `n_splits` |
-| Plot              | `demoScatter`  | [`plots.py`](src/drevalpy_demo_plugin/plots.py)             | Predicted against observed response, one figure per model         |
-| Model preset      | `DemoModel`    | [`zoo.yaml`](src/drevalpy_demo_plugin/zoo.yaml)             | `demoTopGenes` + built-in `identity` drug features + `demoRidge`  |
-| Registration      |                | [`components.py`](src/drevalpy_demo_plugin/components.py)   | The entry point: imports the four modules and loads the preset    |
-| Tests             |                | [`tests/test_plugin.py`](tests/test_plugin.py)              | DrEvalPy's conformance checks, plus one end-to-end run            |
+| What              | Name             | File                                                        | What it does                                                      |
+| ----------------- | ---------------- | ----------------------------------------------------------- | ----------------------------------------------------------------- |
+| Sample featurizer | `demoTopGenes`   | [`featurizers.py`](src/drevalpy_demo_plugin/featurizers.py) | Keeps the `n_genes` most variable genes of the training samples   |
+| Drug featurizer   | `demoAtomCounts` | [`featurizers.py`](src/drevalpy_demo_plugin/featurizers.py) | Counts the atoms of each element in the drug's SMILES             |
+| Predictor         | `demoRidge`      | [`predictors.py`](src/drevalpy_demo_plugin/predictors.py)   | Ridge regression, with a tunable `penalty`                        |
+| Split mode        | `DEMO_LSO`       | [`splitters.py`](src/drevalpy_demo_plugin/splitters.py)     | Leave-sample-out; sample _i_ is tested in fold _i_ mod `n_splits` |
+| Plot              | `demoScatter`    | [`plots.py`](src/drevalpy_demo_plugin/plots.py)             | Predicted against observed response, one figure per model         |
+| Model preset      | `DemoModel`      | [`zoo.yaml`](src/drevalpy_demo_plugin/zoo.yaml)             | `demoTopGenes` + `demoAtomCounts` + `demoRidge`                   |
+| Registration      |                  | [`components.py`](src/drevalpy_demo_plugin/components.py)   | The entry point: imports the four modules and loads the preset    |
+| Tests             |                  | [`tests/test_plugin.py`](tests/test_plugin.py)              | DrEvalPy's conformance checks, plus one end-to-end run            |
+
+A featurizer works on one side, samples or drugs, chosen where it is registered:
+`@register_featurizer("demoAtomCounts", side=Side.DRUG, ...)`. DrEvalPy then offers it only in
+that side's slot, so `demoAtomCounts` is a valid drug featurizer and an unknown sample featurizer.
 
 The components are deliberately simple. Each file explains in its docstring what DrEvalPy
 expects from that kind of component; the DrEvalPy docs (_How-to → Extend DrEvalPy_) cover
@@ -54,7 +59,9 @@ Check that the plugin loaded:
 
 ```bash
 drevalpy list plugins             # demo   loaded   drevalpy_demo_plugin.components
-drevalpy list zoo-presets         # ... DemoModel   demoTopGenes:identity:demoRidge ...
+drevalpy list zoo-presets         # ... DemoModel   demoTopGenes:demoAtomCounts:demoRidge ...
+drevalpy list sample-featurizers  # ... demoTopGenes ...
+drevalpy list drug-featurizers    # ... demoAtomCounts ...
 drevalpy list splitters           # ... DEMO_LSO ...
 drevalpy list visualizations      # ... demoScatter ...
 ```
@@ -83,12 +90,12 @@ drevalpy report results -o report
 ```
 
 Plugin components mix freely with built-in ones. This grid runs every valid combination of the
-given featurizers and predictors, here the plugin's ridge against the built-in elastic net on
-the same features:
+given featurizers and predictors, here the plugin's drug features against built-in
+fingerprints, each with the plugin's ridge and the built-in elastic net:
 
 ```bash
 drevalpy run --dataset toy.h5mu --split-mode DEMO_LSO --no-hpo \
-  -S demoTopGenes -D identity -P demoRidge -P elasticNet -o grid
+  -S demoTopGenes -D demoAtomCounts -D fingerprints -P demoRidge -P elasticNet -o grid
 ```
 
 Train a final model on all pairs and predict with it later:
@@ -137,8 +144,9 @@ wherever the model is loaded. Load only model files you trust: loading unpickles
 
 1. Copy the repository and rename the package: the directory `src/drevalpy_demo_plugin`, the
    `name` in `pyproject.toml`, the entry point (name and module path) and the imports.
-2. Give every component a name of your own. Names are global across all installed plugins and
-   DrEvalPy's built-ins, and registering a taken name raises an error.
+2. Give every component a name of your own. Names are shared by all installed plugins and
+   DrEvalPy's built-ins, and registering a taken name raises an error. Featurizer names only
+   need to be unique within their side.
 3. Replace the example code, and delete the files for kinds of component you don't need; also
    drop them from the imports in `components.py`. Keep the tests for the rest.
 4. Keep every import from `drevalpy.plugin`: that module is the API DrEvalPy promises to keep
@@ -160,9 +168,9 @@ uv run prek install          # run ruff, ty and the tests before each commit
 `uv.lock` pins DrEvalPy to one commit of its branch. To test against the newest one, run
 `uv lock --upgrade-package drevalpy`.
 
-The tests use DrEvalPy's conformance checks (`drevalpy.testing`): the featurizer and the
+The tests use DrEvalPy's conformance checks (`drevalpy.testing`): the featurizers and the
 predictor must produce what they declare and survive a pickle round trip, the splitter must not
-leak samples between train and test, and `check_plugin("demo")` must find all four components
+leak samples between train and test, and `check_plugin("demo")` must find all five components
 through the installed entry point. CI ([`.github/workflows/ci.yml`](.github/workflows/ci.yml))
 runs them with `DREVALPY_STRICT_PLUGINS=1`, which makes a plugin that fails to import an error
 instead of a warning.

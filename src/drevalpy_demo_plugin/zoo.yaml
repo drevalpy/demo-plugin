@@ -1,0 +1,6 @@
+# Model presets: a name for a full model (featurizers + predictor). The command line
+# selects models by preset name, e.g. `drevalpy run DemoModel ...`.
+DemoModel:
+  sample_featurizer: demoTopGenes
+  drug_featurizer: identity # built in: one-hot drug identity
+  predictor: demoRidge

@@ -1,0 +1,35 @@
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.15.8
+    hooks:
+      - id: ruff
+        args: [--fix]
+      - id: ruff-format
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: check-added-large-files
+        exclude: ^uv\.lock$
+      - id: check-toml
+      - id: check-yaml
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: v2.5.1
+    hooks:
+      - id: prettier
+  - repo: local
+    hooks:
+      # Local hooks, because they must see the project environment with drevalpy in it.
+      - id: ty
+        name: ty
+        entry: uv run --frozen ty check
+        language: system
+        pass_filenames: false
+        types: [python]
+      - id: pytest
+        name: pytest
+        entry: uv run --frozen pytest
+        language: system
+        pass_filenames: false
+        types: [python]

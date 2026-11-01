@@ -1,0 +1,56 @@
+[project]
+name = "drevalpy-demo-plugin"
+version = "0.1.0"
+description = "Minimal DrEvalPy plugin with one example of each thing a plugin can provide"
+readme = "README.md"
+requires-python = ">=3.11,<3.14"
+dependencies = [
+    # drevalpy 2.0 is not on PyPI yet; replace with "drevalpy>=2" once it is.
+    "drevalpy @ git+https://github.com/daisybio/drevalpy@v2-13-docs-reference",
+    "matplotlib",
+    "numpy>=1.20",
+]
+
+# drevalpy imports the module named here, which is what registers the components.
+[project.entry-points."drevalpy.plugins"]
+demo = "drevalpy_demo_plugin.components"
+
+[dependency-groups]
+dev = [
+    "prek",
+    "pytest>=8",
+    "ruff>=0.15.8",
+    "ty",
+    # drevalpy leaves the torch build to you (extras cpu, cu126, cu130); development uses CPU.
+    "torch>=2.1",
+]
+
+[tool.uv.sources]
+torch = { index = "pytorch-cpu" }
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[build-system]
+requires = ["uv_build>=0.12.3,<0.13.0"]
+build-backend = "uv_build"
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+testpaths = ["tests"]
+addopts = ["--import-mode=importlib", "--strict-markers", "--strict-config", "-ra"]
+xfail_strict = true
+
+[tool.ruff]
+line-length = 120
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "S", "D", "N", "C90"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S101", "D"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"

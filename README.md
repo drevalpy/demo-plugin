@@ -15,10 +15,6 @@ point for your own.
 | Registration      |                  | [`components.py`](src/drevalpy_demo_plugin/components.py)   | The entry point: imports the four modules and loads the preset    |
 | Tests             |                  | [`tests/test_plugin.py`](tests/test_plugin.py)              | DrEvalPy's conformance checks, plus one end-to-end run            |
 
-A featurizer works on one side, samples or drugs, chosen where it is registered:
-`@register_featurizer("demoAtomCounts", side=Side.DRUG, ...)`. DrEvalPy then offers it only in
-that side's slot, so `demoAtomCounts` is a valid drug featurizer and an unknown sample featurizer.
-
 The components are deliberately simple. Each file explains in its docstring what DrEvalPy
 expects from that kind of component; the DrEvalPy docs (_How-to → Extend DrEvalPy_) cover
 every option.

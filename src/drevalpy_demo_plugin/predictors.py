@@ -15,7 +15,7 @@ from drevalpy.plugin import Accelerator, MatrixPredictor, register_predictor
 @register_predictor(
     "demoRidge",
     description="Ridge regression solved with the normal equations.",
-    supports_accelerator=Accelerator.NONE,
+    accelerator=Accelerator.NONE,
     license="MIT",
 )
 class Ridge(MatrixPredictor):

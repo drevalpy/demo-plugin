@@ -38,13 +38,12 @@ work wherever a built-in name does.
 
 ## Install
 
-The repository is private, so install it over SSH (or with a token) into the environment that
-has DrEvalPy:
+Install it into the environment that has DrEvalPy:
 
 ```bash
-pip install "drevalpy-demo-plugin @ git+ssh://git@github.com/drevalpy/demo-plugin.git"
+pip install "drevalpy-demo-plugin @ git+https://github.com/drevalpy/demo-plugin.git"
 # or, in a uv project:
-uv add "drevalpy-demo-plugin @ git+ssh://git@github.com/drevalpy/demo-plugin.git"
+uv add "drevalpy-demo-plugin @ git+https://github.com/drevalpy/demo-plugin.git"
 ```
 
 The package depends on DrEvalPy 2.0 from its `v2-13-docs-reference` branch until 2.0 is on
@@ -113,7 +112,7 @@ A pipeline can ask which models use an accelerator, and route those to GPU nodes
 
 ```bash
 drevalpy describe DemoModel --tsv -
-# model      predictor  sample_featurizer  drug_featurizer  supports_accelerator  early_stopping  licenses
+# model      predictor  sample_featurizer  drug_featurizer  accelerator  early_stopping  licenses
 # DemoModel  demoRidge  demoTopGenes       demoAtomCounts   none                  none            MIT
 ```
 

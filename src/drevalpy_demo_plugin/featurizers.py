@@ -34,7 +34,7 @@ VIEW = "gene_expression"
     "demoTopGenes",
     side=Side.SAMPLE,
     description="The n most variable genes of the training samples.",
-    supports_accelerator=Accelerator.NONE,
+    accelerator=Accelerator.NONE,
 )
 class TopVarianceGenes(Featurizer):
     """Select the genes whose expression varies most across the training samples."""
@@ -117,7 +117,7 @@ def count_atoms(smiles: str) -> Counter[str]:
     "demoAtomCounts",
     side=Side.DRUG,
     description="How many atoms of each element a drug's SMILES contains.",
-    supports_accelerator=Accelerator.NONE,
+    accelerator=Accelerator.NONE,
 )
 class AtomCounts(Featurizer):
     """Count the atoms of each element in the drug's SMILES.

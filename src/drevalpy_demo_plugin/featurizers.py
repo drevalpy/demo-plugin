@@ -15,6 +15,7 @@ from typing import Any, ClassVar, Self
 
 import numpy as np
 from drevalpy.plugin import (
+    Accelerator,
     BlockSpec,
     FeatureFormat,
     FeatureSource,
@@ -29,7 +30,12 @@ from drevalpy.plugin import (
 VIEW = "gene_expression"
 
 
-@register_featurizer("demoTopGenes", side=Side.SAMPLE, description="The n most variable genes of the training samples.")
+@register_featurizer(
+    "demoTopGenes",
+    side=Side.SAMPLE,
+    description="The n most variable genes of the training samples.",
+    supports_accelerator=Accelerator.NONE,
+)
 class TopVarianceGenes(Featurizer):
     """Select the genes whose expression varies most across the training samples."""
 
@@ -108,7 +114,10 @@ def count_atoms(smiles: str) -> Counter[str]:
 
 
 @register_featurizer(
-    "demoAtomCounts", side=Side.DRUG, description="How many atoms of each element a drug's SMILES contains."
+    "demoAtomCounts",
+    side=Side.DRUG,
+    description="How many atoms of each element a drug's SMILES contains.",
+    supports_accelerator=Accelerator.NONE,
 )
 class AtomCounts(Featurizer):
     """Count the atoms of each element in the drug's SMILES.

@@ -3,6 +3,7 @@ name = "drevalpy-demo-plugin"
 version = "0.1.0"
 description = "Minimal DrEvalPy plugin with one example of each thing a plugin can provide"
 readme = "README.md"
+license = "MIT"
 requires-python = ">=3.11,<3.14"
 dependencies = [
     # drevalpy 2.0 is not on PyPI yet; replace with "drevalpy>=2" once it is.
@@ -22,7 +23,7 @@ dev = [
     "ruff>=0.15.8",
     "ty",
     # drevalpy leaves the torch build to you (extras cpu, cu126, cu130); development uses CPU.
-    "torch>=2.1",
+    "torch>=2.6",
 ]
 
 [tool.uv.sources]

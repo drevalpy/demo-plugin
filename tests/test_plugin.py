@@ -6,7 +6,7 @@ import drevalpy
 import numpy as np
 import pytest
 from drevalpy import ModelSpec
-from drevalpy.plugin import CurveQuality, ModelResult, save_png
+from drevalpy.plugin import Accelerator, CurveQuality, ModelResult, save_png
 from drevalpy.registry import splitter
 from drevalpy.testing import FEATURIZER_CHECKS, PREDICTOR_CHECKS, build_synthetic_batch, check_plugin
 from drevalpy.types.results import RunResult
@@ -29,6 +29,13 @@ def test_plugin_registers_every_component():
 
 def test_plugin_registers_the_preset():
     assert ModelSpec.from_name("DemoModel").config.predictor.name == "demoRidge"
+
+
+def test_the_preset_runs_on_the_cpu_under_the_package_license():
+    spec = ModelSpec.from_name("DemoModel")
+
+    assert spec.accelerator is Accelerator.NONE
+    assert spec.licenses == ("MIT",)
 
 
 @pytest.mark.parametrize("featurizer", [TopVarianceGenes, AtomCounts])

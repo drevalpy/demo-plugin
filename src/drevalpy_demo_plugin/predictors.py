@@ -9,10 +9,15 @@ from __future__ import annotations
 from typing import Any
 
 import numpy as np
-from drevalpy.plugin import MatrixPredictor, register_predictor
+from drevalpy.plugin import Accelerator, MatrixPredictor, register_predictor
 
 
-@register_predictor("demoRidge", description="Ridge regression solved with the normal equations.")
+@register_predictor(
+    "demoRidge",
+    description="Ridge regression solved with the normal equations.",
+    supports_accelerator=Accelerator.NONE,
+    license="MIT",
+)
 class Ridge(MatrixPredictor):
     """Penalised least squares with an unpenalised intercept."""
 

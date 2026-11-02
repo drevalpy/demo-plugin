@@ -109,6 +109,17 @@ drevalpy data split toy.h5mu folds --mode DEMO_LSO
 drevalpy single DemoModel toy.h5mu folds/fold_0.npz fold_0 --no-hpo
 ```
 
+A pipeline can ask which models use an accelerator, and route those to GPU nodes:
+
+```bash
+drevalpy describe DemoModel --tsv -
+# model      predictor  sample_featurizer  drug_featurizer  supports_accelerator  early_stopping  licenses
+# DemoModel  demoRidge  demoTopGenes       demoAtomCounts   none                  none            MIT
+```
+
+`demoRidge` declares `license="MIT"` itself. The two featurizers declare none, so they take the
+`license` of this package's `pyproject.toml`.
+
 ## Use it from Python
 
 Nothing needs importing from the plugin: importing `drevalpy` loads it.
